@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+miner_env/
+*.egg-info/
+
+# Models, data, wallets — NEVER commit
+*.pt
+*.pkl
+*.gz
+data/
+data/**/*.txt
+data/**/*.json
+wallets/
+.bittensor/
+*.log
+*.jsonl
+
+# IDE / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Secrets
+.env
+*.pem
+*.key
