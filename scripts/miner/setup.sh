@@ -154,6 +154,7 @@ main() {
   install_modules
   install_bittensor_cli
   guard_bittensor_versions
+  fix_scalecodec_conflict
   verify_installation
   show_completion_info
 }
