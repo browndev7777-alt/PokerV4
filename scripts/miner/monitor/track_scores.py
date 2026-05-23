@@ -26,7 +26,7 @@ sys.path.insert(0, str(REPO))
 DB_PATH = REPO / "data" / "scores.db"
 
 WALLET_NAME = "Juker126"
-TRACKED_HOTKEYS = ["miner1", "miner2", "miner3"]
+TRACKED_HOTKEYS = ["miner1", "miner2", "miner3", "miner4", "miner5"]
 NETUID = 126
 NETWORK = "finney"
 DEFAULT_INTERVAL_SEC = 600  # 10 minutes (~every 50 blocks)
