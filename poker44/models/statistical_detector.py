@@ -203,6 +203,22 @@ def score_chunk_diversity(hands: List[Dict[str, Any]]) -> float:
     return float(max(0.0, min(1.0, 1.0 - diversity)))
 
 
+def score_chunk_diversity_direct(hands: List[Dict[str, Any]]) -> float:
+    """V1 detector: diversity directly (unique action sequences / n_hands).
+
+    Observed pattern in live data and benchmark:
+    Bot table-sessions have many different agents → high within-chunk diversity.
+    Human sessions are more consistent → lower diversity.
+    Returns diversity directly (high = more bot-like).
+    Use with rank_based_calibrate at the batch level for threshold-free scoring.
+    """
+    if not hands:
+        return 0.5
+    seqs = [tuple(a.get("action_type") for a in h.get("actions", []) or []) for h in hands]
+    diversity = len(set(seqs)) / max(len(hands), 1)
+    return float(max(0.0, min(1.0, diversity)))
+
+
 def score_chunk_other_r(hands: List[Dict[str, Any]]) -> float:
     """V1 detector: ratio of "other" action_type, clipped to [0,1].
 
@@ -234,6 +250,7 @@ DETECTORS = {
     "consistency": score_chunk_consistency,
     "fingerprint": score_chunk_fingerprint,
     "diversity": score_chunk_diversity,
+    "diversity_direct": score_chunk_diversity_direct,
     "other_r": score_chunk_other_r,
 }
 

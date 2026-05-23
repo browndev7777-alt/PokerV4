@@ -94,6 +94,7 @@ VARIANTS = {
     "v1_top1_v3_static_med": {"model_file": None, "description": "V1: top1_v3 + fixed cap 0.15", "use_safe_cap": False, "cls": "lgbm", "lgbm_tag": "v1_top1_v3", "use_batch_adaptive": True, "max_bot_fraction": 0.15, "v1_features": True},
     "v1_real_2026":          {"model_file": None, "description": "REAL benchmark API training (AUC=1.0, AP=1.0 on hold-out 2026-05-05)", "use_safe_cap": False, "cls": "lgbm", "lgbm_tag": "v1_real_2026", "use_dynamic_cap": True, "v1_features": True},
     "v1_custom":             {"model_file": None, "description": "V1: custom model trained on benchmark API data (train_v1_custom.py)", "use_safe_cap": False, "cls": "lgbm", "lgbm_tag": "v1_custom", "use_dynamic_cap": True, "v1_features": True},
+    "v1_diversity_rank":     {"model_file": None, "description": "V1: diversity direct + rank-based calibration at 22% bot fraction", "use_safe_cap": False, "cls": "stat", "stat": "diversity_direct", "use_rank_calibrate": True, "bot_ratio": 0.22},
 
     # TOP1 voting ensemble — agreement_2of3 strategy (3 models vote per chunk)
     # Loads v3 + v2 + B_deeper, uses agreement filter to maximize precision
@@ -287,8 +288,16 @@ class Miner(BaseMinerNeuron):
 
         variant_cfg = VARIANTS.get(self.variant, VARIANTS["hybrid"])
 
+        # Rank-based calibration for stat variants (guarantees bot predictions)
+        if variant_cfg.get("use_rank_calibrate") and len(chunks) > 0:
+            from poker44.score.calibration import rank_based_calibrate
+            raw_scores = [self._score_single_chunk(chunk) for chunk in chunks]
+            bot_ratio = float(variant_cfg.get("bot_ratio", 0.22))
+            cal = rank_based_calibrate(raw_scores, bot_ratio=bot_ratio)
+            scores = [round(float(v), 6) for v in cal]
+
         # TOP1 VOTING ENSEMBLE — agreement_2of3 between 3 models
-        if variant_cfg.get("use_voting_ensemble") and self.voting_models and len(chunks) > 0:
+        elif variant_cfg.get("use_voting_ensemble") and self.voting_models and len(chunks) > 0:
             raw_scores = self._voting_ensemble_score_batch(chunks)
             env_cap = os.getenv("POKER44_MAX_BOT_FRACTION")
             cap = float(env_cap) if env_cap is not None else float(variant_cfg.get("max_bot_fraction", 0.08))
