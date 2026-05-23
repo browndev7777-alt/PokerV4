@@ -93,6 +93,7 @@ VARIANTS = {
     "v1_top1_v3_static_low": {"model_file": None, "description": "V1: top1_v3 + fixed cap 0.10 (anti-cliff)", "use_safe_cap": False, "cls": "lgbm", "lgbm_tag": "v1_top1_v3", "use_batch_adaptive": True, "max_bot_fraction": 0.10, "v1_features": True},
     "v1_top1_v3_static_med": {"model_file": None, "description": "V1: top1_v3 + fixed cap 0.15", "use_safe_cap": False, "cls": "lgbm", "lgbm_tag": "v1_top1_v3", "use_batch_adaptive": True, "max_bot_fraction": 0.15, "v1_features": True},
     "v1_real_2026":          {"model_file": None, "description": "REAL benchmark API training (AUC=1.0, AP=1.0 on hold-out 2026-05-05)", "use_safe_cap": False, "cls": "lgbm", "lgbm_tag": "v1_real_2026", "use_dynamic_cap": True, "v1_features": True},
+    "v1_custom":             {"model_file": None, "description": "V1: custom model trained on benchmark API data (train_v1_custom.py)", "use_safe_cap": False, "cls": "lgbm", "lgbm_tag": "v1_custom", "use_dynamic_cap": True, "v1_features": True},
 
     # TOP1 voting ensemble — agreement_2of3 strategy (3 models vote per chunk)
     # Loads v3 + v2 + B_deeper, uses agreement filter to maximize precision
